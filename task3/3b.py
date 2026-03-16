@@ -42,9 +42,43 @@ def Q_Learning(env, gamma, Q, alpha, epsilon):
         - actions = env.actions()        List available actions in current state (is empty if state is terminal)
     """
 
-    while (not done):
-        raise Exception("Q-learning not implemented")
+     # Fixed action ordering used by the Q-table columns
+    action_list = ["U", "D", "L", "R"] # A = {U, D, L, R}
+    action_to_idx = {a: i for i, a in enumerate(action_list)}
 
+    while (not done):
+        actions = env.actions(s)
+        if len(actions) == 0:
+            break
+
+        # Epsilon-greedy action selection
+        if np.random.rand() < epsilon:
+            # Greedy action among currently available actions
+            q_values = np.array([Q[s, action_to_idx[a]] for a in actions])
+            best_actions = np.flatnonzero(q_values == np.max(q_values))
+            a = actions[np.random.choice(best_actions)]
+        else:
+            # Explore uniformly over available actions
+            a = np.random.choice(actions)
+
+        a_idx = action_to_idx[a]
+
+        # Interact with environment
+        s_next, r, done = env.step(a)
+
+        # Q-learning target uses greedy value at next state (off-policy)
+        next_actions = env.actions(s_next)
+        if done or len(next_actions) == 0:
+            td_target = r
+        else:
+            max_next_q = max(Q[s_next, action_to_idx[a_next]] for a_next in next_actions)
+            td_target = r + gamma * max_next_q
+
+        # Q update
+        Q[s, a_idx] = Q[s, a_idx] + alpha * (td_target - Q[s, a_idx])
+
+        # Move to next state
+        s = s_next
 
     return Q
 
@@ -56,7 +90,7 @@ if __name__ == "__main__":
     """
 
     # Import the environment from file
-    filename = "gridworlds/tiny.json"
+    filename = "gridworlds/large.json"
     env = gridWorld(filename)
 
     # Render image
@@ -71,8 +105,8 @@ if __name__ == "__main__":
     """
     gamma = 1.0     # Discount rate
     alpha = 0.1     # Learning rate
-    epsilon = 0.9   # Probability of taking greedy action
-    episodes = 5000 # Number of episodes
+    epsilon = 0.5   # Probability of taking greedy action
+    episodes = 500 # Number of episodes
 
     Q = np.zeros([len(env.states()), 4])
     for i in range(episodes):
