@@ -157,8 +157,8 @@ class gridWorld(object):
         ax.imshow(self.board_mask, cmap=cmap)
         
         ax.grid(which='major', axis='both', linestyle='-', color='k', linewidth=2)
-        ax.set_xticks(np.arange(-.5, self.board_mask.shape[1] , 1));
-        ax.set_yticks(np.arange(-.5, self.board_mask.shape[0] , 1));
+        ax.set_xticks(np.arange(-.5, self.board_mask.shape[1] , 1))
+        ax.set_yticks(np.arange(-.5, self.board_mask.shape[0] , 1))
         
         patches = []
         
