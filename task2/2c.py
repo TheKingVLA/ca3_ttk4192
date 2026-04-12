@@ -103,7 +103,7 @@ opti.subject_to(theta[N] == pi/4)
 
 # CONTROL CONSTRAINTS (BOUNDED)
 opti.subject_to(opti.bounded(0, v, 1))
-opti.subject_to(opti.bounded(-15, phi, 15))a
+opti.subject_to(opti.bounded(-15, phi, 15))
 
 # TIME POSITIVE
 opti.subject_to(T >= 0)
